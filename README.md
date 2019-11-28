@@ -17,7 +17,15 @@ and run the following command in the project directory to install the dependenci
 pip install -r requirements.txt
 ```
 
-Optionally, you can use [virtualenv](https://docs.python-guide.org/dev/virtualenvs/) to use an isolated Python environment to run the tool.
+Optionally, you can use [virtualenv](https://docs.python-guide.org/dev/virtualenvs/) to use an isolated Python environment to run the tool. It's worth noting that on macOS you need to use stdlib's [venv](https://docs.python.org/3/library/venv.html) instead of virtualenv, see: [Working with Matplotlib on OSX](https://matplotlib.org/3.1.0/faq/osx_framework.html).
+
+For example:
+
+```
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
 
 ## Data model (briefly)
 
