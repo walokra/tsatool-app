@@ -511,8 +511,8 @@ class Condition:
         ax.set_axisbelow(True)
 
         ax.xaxis_date()
-        ax.xaxis.set_major_formatter(mdates.DateFormatter('%m/%y'))
-        ax.xaxis.set_major_locator(mdates.MonthLocator())
+        ax.xaxis.set_major_formatter(mdates.DateFormatter('%d/%m/%y'))
+        ax.xaxis.set_major_locator(mdates.AutoDateLocator())
         ax.xaxis.set_ticks_position('none')
         ax.xaxis.grid(color='#e5e5e5')
         #plt.xticks(rotation=45)
