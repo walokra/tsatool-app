@@ -18,6 +18,7 @@ from io import BytesIO
 from pptx.util import Pt
 from pptx.util import Cm
 from pptx.dml.color import RGBColor
+from openpyxl.cell.cell import WriteOnlyCell
 
 log = logging.getLogger(__name__)
 
@@ -202,6 +203,35 @@ class CondCollection:
                     log_add='exception'
                 )
 
+    def to_worksheet_per_site(self, cnd, wb):
+        """
+        Add a worksheet to an ``openpyxl.Workbook`` instance
+        containing row based results of the condition collection.
+        """
+        df = cnd.main_df
+        ws2 = wb.create_sheet()
+        ws2.title = cnd.site
+
+        cell = WriteOnlyCell(ws2)
+        cell.style = 'Pandas'
+
+        # print(f"### DEBUG, site: {cnd.site}")
+        columns = list(df.columns.values)
+        # print(f"### DEBUG, columns: {columns}")
+        for col_num in range(len(columns)):
+            ws2.cell(row=1, column=col_num+1).value = str(columns[col_num])
+
+        row_count = df.shape[0]
+        # print(f"### DEBUG, row_count: {row_count}")
+        sheet_row = 2
+        for row_num in range(row_count):
+            sheet_row = row_num+2
+            for col_num in range(len(columns)):
+                # print(f"### cond_collection DEBUG, col_num: {col_num}")
+                # print(f"### cond_collection DEBUG, str(df[columns[[{col_num}]][{i}]): {str(df[columns[col_num]][i])}")
+                ws2.cell(row=sheet_row, column=col_num+1).value = str(df[columns[col_num]][row_num])
+
+
     def to_worksheet(self, wb):
         """
         Add a worksheet to an ``openpyxl.Workbook`` instance
@@ -251,6 +281,9 @@ class CondCollection:
             ws[f'F{r}'].number_format = '0.00 %'
             ws[f'G{r}'].number_format = '0.00 %'
             ws[f'H{r}'].number_format = '0.00 %'
+
+            # Add new sheets for row based data of analysis
+            self.to_worksheet_per_site(cnd, wb)
 
             r += 1
 
