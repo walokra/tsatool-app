@@ -1,0 +1,27 @@
+version: "3"
+
+services:
+  timescaledb:
+    image: timescale/timescaledb:1.5.1-pg11
+    container_name: timescaledb
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=tsadash
+      - POSTGRES_DB=tsa
+    volumes:
+      - ./database/example_data/EXAMPLE_anturi_arvo-2018_03.csv:/rawdata/anturi_arvo-2018_03.csv
+      - ./database/example_data/EXAMPLE_tiesaa_mittatieto-2018_03.csv:/rawdata/tiesaa_mittatieto-2018_03.csv
+      - ./database/01_init_db.sql:/docker-entrypoint-initdb.d/01_init_db.sql
+      - ./database/02_rawdata_schema.sql:/docker-entrypoint-initdb.d/02_rawdata_schema.sql
+      - ./database/03_insert_stations_sensors.sql:/docker-entrypoint-initdb.d/03_insert_stations_sensors.sql
+      - ./database/tiesaa_asema_filtered.csv:/tiesaa_asema_filtered.csv
+      - ./database/laskennallinen_anturi_filtered.csv:/laskennallinen_anturi_filtered.csv
+    ports:
+      - "5432:5432"
+    networks:
+      - tsatool-network
+    restart: always
+
+networks:
+  tsatool-network:
+    external: true
