@@ -70,10 +70,10 @@ Note: You could be using pigz (multithreaded gzip) instead of gzip for faster co
             -c  "\COPY (SELECT * FROM stations) TO processed/stations_2018-03.csv DELIMITER ',' CSV"
 
     time PGPASSWORD=postgres psql -h localhost -p 5432 -d tsa -U tsadash \
-            -c  "\COPY seobs TO program 'gzip > processed/seobs_2018-03.csv.gz' DELIMITER ',' CSV"
+            -c  "\COPY (SELECT * FROM seobs) TO program 'gzip > processed/seobs_2018-03.csv.gz' DELIMITER ',' CSV"
 
     time PGPASSWORD=postgres psql -h localhost -p 5432 -d tsa -U tsadash \
-            -c  "\COPY statobs TO program 'gzip > processed/statobs_2018-03.csv.gz' DELIMITER ',' CSV"
+            -c  "\COPY (SELECT * FROM statobs) TO program 'gzip > processed/statobs_2018-03.csv.gz' DELIMITER ',' CSV"
 
 1. Import the data into new TimescaleDB.
 
