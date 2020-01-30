@@ -30,10 +30,10 @@ Run psql with following procedure to insert data:
 
     time PGPASSWORD=postgres psql -h localhost -p 5432 -d tsa -U tsadash \
         -c  "BEGIN; \
-            COPY tiesaa_mittatieto FROM '/rawdata/tiesaa_mittatieto-2018_03.csv' CSV HEADER DELIMITER '|'; \
+            COPY tiesaa_mittatieto FROM program 'zcat /rawdata/tiesaa_mittatieto-2018_12.csv.gz' CSV HEADER DELIMITER '|'; \
             CALL populate_statobs(); \
             TRUNCATE TABLE tiesaa_mittatieto; \
-            COPY anturi_arvo FROM '/rawdata/anturi_arvo-2018_03.csv' CSV HEADER DELIMITER '|'; \
+            COPY anturi_arvo FROM program 'zcat /rawdata/anturi_arvo-2018_12.csv.gz' CSV HEADER DELIMITER '|'; \
             CALL populate_seobs(); \
             TRUNCATE TABLE anturi_arvo; \
             COMMIT;"
@@ -89,11 +89,11 @@ Import CSV:
     PGPASSWORD=postgres ~/go/bin/timescaledb-parallel-copy --connection "host=localhost user=tsadash sslmode=disable" --db-name tsa --table stations \
         --file processed/stations.csv --workers 4 --copy-options "CSV" --reporting-period 30s
 
-    cat processed/seobs.csv.gz | \
+    cat processed/seobs_2018-03.csv.gz | \
         gunzip | ~/go/bin/timescaledb-parallel-copy --connection "host=localhost user=tsadash password=postgres sslmode=disable" --db-name tsa --table seobs \
             --verbose --workers 4 --copy-options "CSV" --reporting-period 30s
 
-    cat processed/statobs.csv.gz | \
+    cat processed/statobs_2018-03.csv.gz | \
         gunzip | ~/go/bin/timescaledb-parallel-copy --connection "host=localhost user=tsadash password=postgres sslmode=disable" --db-name tsa --table statobs \
             --verbose --workers 4 --copy-options "CSV" --reporting-period 30s
 
