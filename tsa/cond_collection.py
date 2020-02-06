@@ -203,6 +203,14 @@ class CondCollection:
                     log_add='exception'
                 )
 
+    def as_text(self, value):
+        return str(value) if value is not None else ""
+
+    def adjust_column_width(self, worksheet):
+        for column_cells in worksheet.columns:
+            length = max(len(self.as_text(cell.value)) for cell in column_cells)
+            worksheet.column_dimensions[xl.utils.get_column_letter(column_cells[0].column)].width = length
+
     def to_worksheet_per_site(self, cnd, wb):
         """
         Add a worksheet to an ``openpyxl.Workbook`` instance
@@ -231,6 +239,7 @@ class CondCollection:
                 # print(f"### cond_collection DEBUG, str(df[columns[[{col_num}]][{i}]): {str(df[columns[col_num]][i])}")
                 ws2.cell(row=sheet_row, column=col_num+1).value = str(df[columns[col_num]][row_num])
 
+        self.adjust_column_width(ws2)
 
     def to_worksheet(self, wb):
         """
@@ -255,6 +264,7 @@ class CondCollection:
                    'H3': 'nodata',
                    'I3': 'rows'
                    }
+
         for k, v in headers.items():
             ws[k] = v
             ws[k].font = xl.styles.Font(bold=True)
@@ -286,6 +296,8 @@ class CondCollection:
             self.to_worksheet_per_site(cnd, wb)
 
             r += 1
+
+        self.adjust_column_width(ws)
 
     def to_pptx(self, pptx_template, png_dir=None):
         """
