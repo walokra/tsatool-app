@@ -223,14 +223,14 @@ class CondCollection:
         cell = WriteOnlyCell(ws2)
         cell.style = 'Pandas'
 
-        # print(f"### DEBUG, site: {cnd.site}")
+        # Get list of columns
         columns = list(df.columns.values)
-        # print(f"### DEBUG, columns: {columns}")
+        # Set column headers
         for col_num in range(len(columns)):
             ws2.cell(row=1, column=col_num+1).value = str(columns[col_num])
 
+        # Read dataframe and add column values to sheet rows
         row_count = df.shape[0]
-        # print(f"### DEBUG, row_count: {row_count}")
         sheet_row = 2
         for row_num in range(row_count):
             sheet_row = row_num+2
