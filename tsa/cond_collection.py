@@ -10,6 +10,7 @@ import openpyxl as xl
 from .condition import Condition
 from .error import TsaErrCollection
 from .utils import strfdelta
+from .utils import strfdelta_to_minutes
 from .utils import list_local_statids
 from .utils import list_local_sensors
 from collections import OrderedDict
@@ -19,6 +20,7 @@ from pptx.util import Pt
 from pptx.util import Cm
 from pptx.dml.color import RGBColor
 from openpyxl.cell.cell import WriteOnlyCell
+from openpyxl.styles import PatternFill
 
 log = logging.getLogger(__name__)
 
@@ -225,19 +227,48 @@ class CondCollection:
 
         # Get list of columns
         columns = list(df.columns.values)
+        print(f"### DEBUG, columns: {columns}")
         # Set column headers
         for col_num in range(len(columns)):
+            ws2.cell(row=1, column=col_num+1).font = xl.styles.Font(bold=True)
             ws2.cell(row=1, column=col_num+1).value = str(columns[col_num])
 
         # Read dataframe and add column values to sheet rows
         row_count = df.shape[0]
         sheet_row = 2
+
+        redFill = PatternFill(start_color='FFC7CE', end_color='FFC7CE', fill_type='solid')
+        greenFill = PatternFill(start_color='C6EFCE', end_color='C6EFCE', fill_type='solid')
+
         for row_num in range(row_count):
             sheet_row = row_num+2
             for col_num in range(len(columns)):
                 # print(f"### cond_collection DEBUG, col_num: {col_num}")
                 # print(f"### cond_collection DEBUG, str(df[columns[[{col_num}]][{i}]): {str(df[columns[col_num]][i])}")
-                ws2.cell(row=sheet_row, column=col_num+1).value = str(df[columns[col_num]][row_num])
+                value = df[columns[col_num]][row_num]
+                if col_num == 0:
+                    vfrom = value.timestamp()
+                    vfrom = datetime.fromtimestamp(vfrom)
+                    ws2.cell(row=sheet_row, column=col_num+1).value = vfrom.strftime('%d.%m.%Y %H:%M:%S')
+                elif col_num == 1:
+                    vuntil = value.timestamp()
+                    vuntil = datetime.fromtimestamp(vuntil)
+                    ws2.cell(row=sheet_row, column=col_num+1).value = vuntil.strftime('%d.%m.%Y %H:%M:%S')
+                elif col_num == 2:
+                    # diff in minutes from timedelta
+                    vdiff = strfdelta_to_minutes(value)
+                    ws2.cell(row=sheet_row, column=col_num+1).value = vdiff
+                else:
+                    if value == True:
+                        ws2.cell(row=sheet_row, column=col_num+1).value = 1
+                        ws2.cell(row=sheet_row, column=col_num+1).fill = greenFill
+                    elif value == False:
+                        ws2.cell(row=sheet_row, column=col_num+1).value = 0
+                        ws2.cell(row=sheet_row, column=col_num+1).fill = redFill
+                    elif value == None:
+                        ws2.cell(row=sheet_row, column=col_num+1).value = ''
+                    else:
+                        ws2.cell(row=sheet_row, column=col_num+1).value = str(value)
 
         self.adjust_column_width(ws2)
 

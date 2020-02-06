@@ -102,6 +102,16 @@ def strfdelta(tdelta, fmt):
     d['minutes'], d['seconds'] = divmod(rem, 60)
     return fmt.format(**d)
 
+def strfdelta_to_minutes(tdelta):
+    """
+    Format timedelta object to minutes.
+    """
+    d = {'days': tdelta.days}
+    d['hours'], rem = divmod(tdelta.seconds, 3600)
+    d['minutes'], d['seconds'] = divmod(rem, 60)
+    d = d['days'] * 24*60 + d['hours'] * 60 + d['minutes']
+    return d
+
 def trunc_str(s, n=80):
     """
     Truncate string ``s`` such that ``n-4`` first characters + `` ...``
