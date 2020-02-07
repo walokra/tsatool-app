@@ -34,5 +34,6 @@ venv.bak/
 .gz
 .sql
 
-analysis
+analysis/
 .vscode
+processed/
