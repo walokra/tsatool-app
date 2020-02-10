@@ -206,9 +206,16 @@ class CondCollection:
                 )
 
     def as_text(self, value):
+        """
+        Convert value to string
+        and return "" if None
+        """
         return str(value) if value is not None else ""
 
     def adjust_column_width(self, worksheet):
+        """
+        Set worksheet column width to fit content
+        """
         for column_cells in worksheet.columns:
             length = max(len(self.as_text(cell.value)) for cell in column_cells)
             worksheet.column_dimensions[xl.utils.get_column_letter(column_cells[0].column)].width = length
@@ -227,6 +234,8 @@ class CondCollection:
 
         # Get list of columns
         columns = list(df.columns.values)
+        columns.insert(1, 'vfrom')
+        columns.insert(3, 'vuntil')
         print(f"### DEBUG, columns: {columns}")
         # Set column headers
         for col_num in range(len(columns)):
@@ -249,12 +258,20 @@ class CondCollection:
                 if col_num == 0:
                     vfrom = value.timestamp()
                     vfrom = datetime.fromtimestamp(vfrom)
-                    ws2.cell(row=sheet_row, column=col_num+1).value = vfrom.strftime('%d.%m.%Y %H:%M:%S')
+                    ws2.cell(row=sheet_row, column=col_num+1).value = vfrom.strftime('%d.%m.%Y')
                 elif col_num == 1:
+                    vfrom = value.timestamp()
+                    vfrom = datetime.fromtimestamp(vfrom)
+                    ws2.cell(row=sheet_row, column=col_num+1).value = vfrom.strftime('%H:%M:%S')
+                elif col_num == 2:
                     vuntil = value.timestamp()
                     vuntil = datetime.fromtimestamp(vuntil)
-                    ws2.cell(row=sheet_row, column=col_num+1).value = vuntil.strftime('%d.%m.%Y %H:%M:%S')
-                elif col_num == 2:
+                    ws2.cell(row=sheet_row, column=col_num+1).value = vuntil.strftime('%d.%m.%Y')
+                elif col_num == 3:
+                    vuntil = value.timestamp()
+                    vuntil = datetime.fromtimestamp(vuntil)
+                    ws2.cell(row=sheet_row, column=col_num+1).value = vuntil.strftime('%H:%M:%S')
+                elif col_num == 4:
                     # diff in minutes from timedelta
                     vdiff = strfdelta_to_minutes(value)
                     ws2.cell(row=sheet_row, column=col_num+1).value = vdiff
