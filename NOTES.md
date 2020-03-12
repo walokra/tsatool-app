@@ -89,11 +89,11 @@ Import CSV:
     PGPASSWORD=postgres ~/go/bin/timescaledb-parallel-copy --connection "host=localhost user=tsadash sslmode=disable" --db-name tsa --table stations \
         --file processed/stations.csv --workers 4 --copy-options "CSV" --reporting-period 30s
 
-    cat processed/seobs_2018-03.csv.gz | \
+    zcat processed/seobs_2018-03.csv.gz | \
         gunzip | ~/go/bin/timescaledb-parallel-copy --connection "host=localhost user=tsadash password=postgres sslmode=disable" --db-name tsa --table seobs \
             --verbose --workers 4 --copy-options "CSV" --reporting-period 30s
 
-    cat processed/statobs_2018-03.csv.gz | \
+    zcat processed/statobs_2018-03.csv.gz | \
         gunzip | ~/go/bin/timescaledb-parallel-copy --connection "host=localhost user=tsadash password=postgres sslmode=disable" --db-name tsa --table statobs \
             --verbose --workers 4 --copy-options "CSV" --reporting-period 30s
 
