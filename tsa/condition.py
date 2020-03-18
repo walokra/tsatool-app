@@ -358,9 +358,9 @@ class Condition:
                            "lower(valid_r) AS vfrom, \n"
                            "upper(valid_r) AS vuntil, \n"
                            "upper(valid_r)-lower(valid_r) AS vdiff, \n"
-                           f"{self.blocks.keys()[0]}, \n"
-                           f"{self.blocks.keys()[0]} AS master \n"
-                           f"FROM {self.blocks.keys()[0]});")
+                           f"{list(self.blocks.keys())[0]}, \n"
+                           f"{list(self.blocks.keys())[0]} AS master \n"
+                           f"FROM {list(self.blocks.keys())[0]});")
         else:
             master_seq_els = []
             for bl in self.blocks.values():
