@@ -236,7 +236,7 @@ class CondCollection:
         columns = list(df.columns.values)
         columns.insert(1, 'vfrom')
         columns.insert(3, 'vuntil')
-        print(f"### DEBUG, columns: {columns}")
+        # print(f"### DEBUG, columns: {columns}")
         # Set column headers
         for col_num in range(len(columns)):
             ws2.cell(row=1, column=col_num+1).font = xl.styles.Font(bold=True)

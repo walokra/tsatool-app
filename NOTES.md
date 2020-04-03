@@ -69,6 +69,8 @@ Note: You could be using pigz (multithreaded gzip) instead of gzip for faster co
     time PGPASSWORD=postgres psql -h localhost -p 5432 -d tsa -U tsadash \
             -c  "\COPY (SELECT * FROM stations) TO processed/stations_2018-03.csv DELIMITER ',' CSV"
 
+    OR using gzip
+
     time PGPASSWORD=postgres psql -h localhost -p 5432 -d tsa -U tsadash \
             -c  "\COPY (SELECT * FROM seobs) TO program 'gzip > processed/seobs_2018-03.csv.gz' DELIMITER ',' CSV"
 
@@ -83,33 +85,21 @@ Use timescaledb-parallel-copy:
 
 Import CSV:
 
-    PGPASSWORD=postgres ~/go/bin/timescaledb-parallel-copy --connection "host=localhost user=tsadash sslmode=disable" --db-name tsa --table sensors \
-        --file processed/sensors.csv --workers 4 --copy-options "CSV" --reporting-period 30s
-
-    PGPASSWORD=postgres ~/go/bin/timescaledb-parallel-copy --connection "host=localhost user=tsadash sslmode=disable" --db-name tsa --table stations \
-        --file processed/stations.csv --workers 4 --copy-options "CSV" --reporting-period 30s
-
-    zcat processed/seobs_2018-03.csv.gz | \
+    cat seobs_2019_01.csv.gz | \
         gunzip | ~/go/bin/timescaledb-parallel-copy --connection "host=localhost user=tsadash password=postgres sslmode=disable" --db-name tsa --table seobs \
             --verbose --workers 4 --copy-options "CSV" --reporting-period 30s
 
-    zcat processed/statobs_2018-03.csv.gz | \
+    cat statobs_2019_01.csv.gz | \
         gunzip | ~/go/bin/timescaledb-parallel-copy --connection "host=localhost user=tsadash password=postgres sslmode=disable" --db-name tsa --table statobs \
             --verbose --workers 4 --copy-options "CSV" --reporting-period 30s
 
 OR using psql COPY:
 
     time PGPASSWORD=postgres psql -h localhost -p 5432 -d tsa -U tsadash \
-        -c "\COPY sensors FROM 'processed/sensors.csv' CSV;"
+        -c "\COPY seobs FROM program 'zcat seobs_2019_01.csv.gz' CSV";
 
     time PGPASSWORD=postgres psql -h localhost -p 5432 -d tsa -U tsadash \
-        -c "\COPY stations FROM 'processed/stations.csv' CSV";
-
-    time PGPASSWORD=postgres psql -h localhost -p 5432 -d tsa -U tsadash \
-        -c "\COPY seobs FROM program 'zcat processed/seobs.csv.gz' CSV";
-
-    time PGPASSWORD=postgres psql -h localhost -p 5432 -d tsa -U tsadash \
-        -c "\COPY statobs FROM program 'zcat processed/statobs.csv.gz' CSV";
+        -c "\COPY statobs FROM program 'zcat statobs_2019_01.csv.gz' CSV";
 
 ### Notes on migrating
 
